@@ -8,9 +8,11 @@ template = "blog-post.html"
 tag = "events"
 +++
 
-[Zurihac](https://zfoh.ch/zurihac2026/) is in about two weeks, and BHC will
-be there. This post is the short pre-event status: what we have running,
-what we'll demo, and what we'd most like to talk about.
+[Zurihac 2026](https://zfoh.ch/zurihac2026/) — 6–8 June, OST Eastern
+Switzerland University of Applied Sciences, Rapperswil-Jona — is in about
+two weeks, and BHC will be there. This post is the short pre-event
+status: what we have running, what we'll demo, and what we'd most like
+to talk about.
 
 If you're skimming, the three useful links are
 [install](@/_index.md#try-it-now), the [status page](@/status.md), and the
@@ -98,4 +100,4 @@ If you find a thing that should compile and doesn't, the highest-value
 report shape is: a minimal `.hs` file (single module, no external deps),
 the BHC version, and the diagnostic. That's enough for a fast turnaround.
 
-See you in Zurich.
+See you in Rapperswil.
