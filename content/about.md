@@ -107,7 +107,7 @@ In compatibility modes, BHC aims to preserve Haskell semantics. Where runtime be
 
 ## Open Source
 
-BHC is open source under the MIT license.
+BHC is open source under the BSD-3-Clause license.
 
 - [GitHub Repository](https://github.com/arcanist-sh/bhc)
 - [Issue Tracker](https://github.com/arcanist-sh/bhc/issues)

@@ -74,7 +74,7 @@ badge_url = "https://github.com/arcanist-sh/bhc"
 features_title = "Capabilities"
 features_subtitle = "BHC extends standard Haskell with runtime profiles, a tensor-native numeric pipeline, and compilation targets beyond native binaries. Same language, more options."
 footer_tagline = "Functional. Portable. Fast. Haskell that ships."
-footer_note = "© 2025 arcanist.sh. Released under the MIT License."
+footer_note = "© 2025 arcanist.sh. Released under the BSD-3-Clause License."
 
 # Install methods for dropdown
 [[extra.product.install_methods]]
@@ -525,7 +525,7 @@ external = true
 [[extra.product.footer_links]]
 title = "Legal"
 [[extra.product.footer_links.links]]
-text = "License (MIT)"
+text = "License (BSD-3-Clause)"
 url = "https://github.com/arcanist-sh/bhc/blob/main/LICENSE"
 external = true
 
