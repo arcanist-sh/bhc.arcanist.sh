@@ -65,6 +65,8 @@ Profiles are our attempt to make this less painful. Instead of "here are 200 kno
 
 It's opinionated, which means we're sometimes wrong about what you need. But we'd rather ship tested combinations than untested flexibility.
 
+There's a quieter reason too. A flag is something you set and forget; a profile is a contract you can name. Once the performance envelope a module was compiled under has a name — `server`, `numeric`, `edge` — it's something you can point at, record, and reason about, instead of a guess reconstructed from a pile of RTS options. We think that matters more as compilers do more of the optimizing: "optimized" is not one thing, and a profile is us saying out loud which thing we meant.
+
 ### Why a New Runtime?
 
 Haskell doesn't require a specific runtime — that's an implementation detail. GHC's runtime is good, but it's one runtime trying to serve everyone.

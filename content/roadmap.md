@@ -159,6 +159,30 @@ Enable BHC to compile real-world Haskell projects like xmonad, pandoc, and lens.
 - Comprehensive documentation
 - Full Hackage package compatibility testing
 
+## Exploratory — Verification Hooks 🔬
+
+A compiler that elaborates a program to a typed core already holds enough
+information to expose verification artifacts, not just an executable. These
+items are exploratory and post-v1; they are listed because they shape the
+design decisions we make now. They are what lets a verified definition be
+[cited instead of re-checked](https://arcanist.sh/commons/).
+
+- **Content-addressed definitions** — derive a stable identity from the
+  *elaborated* meaning of a definition (after dictionary passing and
+  desugaring), not its source text. The honest hard part is doing this in
+  the presence of type classes; dictionary-passing elaboration is the step
+  that makes it tractable.
+- **Manifest emission** — emit, alongside the artifact, a precise record of
+  what the compiler checked (types, exhaustiveness, discharged obligations)
+  and, just as explicitly, what it did not.
+- **Reproducible-artifact attestation** — recompiling a definition reaches
+  the same address and the same artifact, so the load-bearing claim is one
+  nobody has to be trusted for. The native↔WASM differential work is the
+  groundwork for this.
+- **Profile in the address** — the runtime profile a definition was compiled
+  under is part of its identity, because under a different profile it is a
+  different artifact. Meaning *and* contract, together, name the thing.
+
 ## Not Planned (v1)
 
 Some features are explicitly out of scope for v1:
