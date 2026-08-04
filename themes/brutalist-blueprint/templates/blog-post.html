@@ -170,7 +170,7 @@
     window.addEventListener('resize', generateSectionDividers);
 
     // ==========================================================================
-    // Blog Post Hero Animation - Pulsing brackets
+    // Blog Post Hero Animation - Compiler pipeline / flowing AST nodes
     // ==========================================================================
     (function() {
         const canvas = document.getElementById('page-hero-canvas');
@@ -190,42 +190,140 @@
 
         const style = getComputedStyle(document.documentElement);
         const accentColor = style.getPropertyValue('--color-accent').trim() || '#cba6f7';
+        const gridColor = style.getPropertyValue('--color-grid').trim() || '#45475a';
+
+        // AST node types that cycle through the pipeline
+        const nodeLabels = [
+            'App', 'Lam', 'Let', 'Case', 'Var', 'Lit', 'Con',
+            'TyApp', 'Bind', 'Alt', 'Pat', 'Fun', 'IO', 'Seq'
+        ];
+
+        // Particles flowing through the pipeline
+        const particles = [];
+        const maxParticles = 40;
+
+        function spawnParticle() {
+            if (particles.length >= maxParticles) return;
+            const lane = Math.floor(Math.random() * 5);
+            particles.push({
+                x: -20 - Math.random() * 60,
+                y: 0,
+                lane: lane,
+                speed: 0.3 + Math.random() * 0.5,
+                label: nodeLabels[Math.floor(Math.random() * nodeLabels.length)],
+                size: 4 + Math.random() * 4,
+                phase: Math.random() * Math.PI * 2,
+                life: 1.0,
+            });
+        }
 
         function draw() {
             ctx.clearRect(0, 0, width, height);
-            time += 0.015;
+            time += 0.012;
 
-            const centerX = width / 2;
             const centerY = height / 2;
+            const pipelineY = centerY;
 
+            // Spawn new particles
+            if (Math.random() < 0.15) spawnParticle();
+
+            // Draw faint horizontal pipeline lanes
+            ctx.strokeStyle = gridColor;
+            ctx.lineWidth = 0.5;
+            for (let lane = 0; lane < 5; lane++) {
+                const y = pipelineY + (lane - 2) * 22;
+                ctx.globalAlpha = 0.15 + Math.sin(time + lane) * 0.05;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+
+            // Draw pipeline stage markers
             ctx.strokeStyle = accentColor;
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 1;
+            const stages = ['Parse', 'Lower', 'Core', 'LLVM'];
+            const stageSpacing = width / (stages.length + 1);
+
+            for (let s = 0; s < stages.length; s++) {
+                const sx = stageSpacing * (s + 1);
+                const pulse = Math.sin(time * 2 + s * 1.2) * 0.5 + 0.5;
+
+                // Vertical bar at each stage
+                ctx.globalAlpha = 0.12 + pulse * 0.08;
+                ctx.beginPath();
+                ctx.moveTo(sx, pipelineY - 55);
+                ctx.lineTo(sx, pipelineY + 55);
+                ctx.stroke();
+
+                // Stage label
+                ctx.globalAlpha = 0.18 + pulse * 0.12;
+                ctx.fillStyle = accentColor;
+                ctx.font = '9px JetBrains Mono, monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(stages[s], sx, pipelineY - 62);
+            }
+
+            // Update and draw particles
             ctx.lineCap = 'round';
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.speed;
 
-            // Draw multiple pulsing bracket pairs
-            for (let i = 0; i < 3; i++) {
-                const phase = time + i * 0.8;
-                const pulse = Math.sin(phase) * 0.5 + 0.5;
-                const size = 30 + i * 20 + pulse * 10;
-                const spread = 60 + i * 40 + pulse * 20;
+                // Sine wave drift in y
+                const laneY = pipelineY + (p.lane - 2) * 22;
+                p.y = laneY + Math.sin(p.x * 0.015 + p.phase) * 8;
 
-                ctx.globalAlpha = 0.15 + (1 - i / 3) * 0.15;
+                // Particle passes through stage markers — brief brightening
+                let stageBrightness = 0;
+                for (let s = 0; s < stages.length; s++) {
+                    const sx = stageSpacing * (s + 1);
+                    const dist = Math.abs(p.x - sx);
+                    if (dist < 15) stageBrightness = Math.max(stageBrightness, 1 - dist / 15);
+                }
 
-                // Left bracket
+                // Fade in at left, fade out at right
+                const fadeIn = Math.min(1, p.x / 80);
+                const fadeOut = Math.min(1, (width + 20 - p.x) / 80);
+                const alpha = fadeIn * fadeOut * (0.2 + stageBrightness * 0.5);
+
+                // Draw connecting line to nearby particles in same lane
+                for (let j = i - 1; j >= Math.max(0, i - 8); j--) {
+                    const q = particles[j];
+                    if (q.lane !== p.lane) continue;
+                    const dx = p.x - q.x;
+                    const dy = p.y - q.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 60) {
+                        ctx.globalAlpha = alpha * (1 - dist / 60) * 0.3;
+                        ctx.strokeStyle = accentColor;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(q.x, q.y);
+                        ctx.stroke();
+                    }
+                }
+
+                // Draw node
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = accentColor;
                 ctx.beginPath();
-                ctx.moveTo(centerX - spread + 10, centerY - size);
-                ctx.lineTo(centerX - spread, centerY - size);
-                ctx.lineTo(centerX - spread, centerY + size);
-                ctx.lineTo(centerX - spread + 10, centerY + size);
-                ctx.stroke();
+                ctx.arc(p.x, p.y, p.size * (0.4 + stageBrightness * 0.6), 0, Math.PI * 2);
+                ctx.fill();
 
-                // Right bracket
-                ctx.beginPath();
-                ctx.moveTo(centerX + spread - 10, centerY - size);
-                ctx.lineTo(centerX + spread, centerY - size);
-                ctx.lineTo(centerX + spread, centerY + size);
-                ctx.lineTo(centerX + spread - 10, centerY + size);
-                ctx.stroke();
+                // Draw label for larger / brighter nodes
+                if (p.size > 5 && alpha > 0.25) {
+                    ctx.globalAlpha = alpha * 0.7;
+                    ctx.font = '7px JetBrains Mono, monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(p.label, p.x, p.y - p.size - 3);
+                }
+
+                // Remove off-screen particles
+                if (p.x > width + 30) {
+                    particles.splice(i, 1);
+                }
             }
 
             ctx.globalAlpha = 1;
