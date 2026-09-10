@@ -42,6 +42,8 @@ Core patterns fuse reliably:
 
 This is a contract, not a best-effort optimization. If fusion should happen and doesn't, that's a bug.
 
+> **Status (September 2026):** this contract is met in the Tensor IR and Loop IR stages, which pass their internal tests. It is not yet realised in native code generation: the native backend does not consume the fused Loop IR, so a numeric-profile build currently produces the same code and the same timing as the default profile. "Guaranteed" is the standard we hold ourselves to, not a description of today's binaries. See the [status page](@/status.md).
+
 ### SIMD and parallel lowering
 When legal and profitable:
 - Vectorized operations using CPU SIMD instructions
@@ -50,7 +52,7 @@ When legal and profitable:
 
 ### GPU acceleration
 For large-scale parallelism:
-- CUDA (NVIDIA) and ROCm (AMD) backends
+- Apple Metal runs on Apple-silicon GPUs today; CUDA (NVIDIA) and ROCm (AMD) backends are mock-validated pending hardware
 - Tensor IR operations lower to GPU kernels
 - Automatic host/device memory management
 - Kernel fusion across operations

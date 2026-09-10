@@ -436,6 +436,8 @@ The diagram shows how `map f (map g xs)` fuses: after desugaring through streams
 
 BHC **guarantees** fusion for common patterns. If you write `sum (map f xs)`, the compiler will produce a single loop—no intermediate list, no extra allocation. Failure to fuse these patterns is considered a compiler bug.
 
+> **Status (September 2026):** this contract is met in the Tensor IR and Loop IR stages, which pass their internal tests. It is not yet realised in native code generation: the native backend does not consume the fused Loop IR, so a numeric-profile build currently produces the same code and the same timing as the default profile. "Guaranteed" is the standard we hold ourselves to, not a description of today's binaries. See the [status page](@/status.md).
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                             FUSION SYSTEM                                   │
@@ -674,7 +676,7 @@ The **LLVM Backend** produces LLVM IR, which then goes through LLVM's optimizer 
 
 The **WASM Backend** produces WebAssembly binaries for browser and edge deployment. The edge profile specifically targets this backend with a minimal runtime. The `wasm-opt` tool provides additional size and speed optimizations.
 
-The **CUDA Backend** generates PTX code for NVIDIA GPUs. Tensor IR operations on large arrays can be offloaded to GPU execution, with the compiler handling memory transfers automatically.
+The **GPU backends** offload Tensor IR operations on large arrays, with the compiler handling memory transfers automatically. Metal is the path that runs on real hardware today: it compiles Metal Shading Language at run time and executes on the shared-memory GPU of any Apple-silicon Mac. The CUDA backend generates PTX for NVIDIA GPUs and the ROCm backend generates AMDGCN for AMD; both are validated in mock mode pending hardware.
 
 All backends eventually feed into the linker, which combines the generated code with the BHC runtime system (garbage collector, scheduler, standard library) to produce a final executable.
 

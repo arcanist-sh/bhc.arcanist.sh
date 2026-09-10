@@ -45,7 +45,7 @@ Limitations:
 - Some runtime features restricted by WASI
 - Edge profile recommended for size
 
-### GPU (CUDA/ROCm)
+### GPU (Metal / CUDA / ROCm)
 
 Accelerated compute for numeric workloads.
 
@@ -54,10 +54,11 @@ bhc --target=cuda Main.hs
 bhc --target=rocm Main.hs
 ```
 
-Status: **Supported**
+Status: **Metal runs on hardware; CUDA and ROCm are mock-validated**
 
-- NVIDIA CUDA (PTX code generation)
-- AMD ROCm (AMDGCN code generation)
+- Apple Metal: the runtime compiles Metal Shading Language at run time and executes on the GPU of any Apple-silicon Mac. This is the one GPU path that runs, and is checked, on real hardware today. macOS only, behind the `metal` build feature; no `--target` flag yet.
+- NVIDIA CUDA: PTX code generation, validated in mock mode; real-hardware testing pending
+- AMD ROCm: AMDGCN code generation, structure complete; needs hardware
 - Automatic kernel fusion from Tensor IR
 - Device memory management
 - Works with numeric profile
