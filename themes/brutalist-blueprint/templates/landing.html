@@ -34,13 +34,8 @@ config.extra.product.tagline }}{% endblock %} {% block content %}
                     {% endif %}
                 </div>
                 <div class="hero__content">
-                    <!-- Haskell Logo -->
-                    <img
-                        src="{{ get_url(path='img/haskell-logo.svg') | safe }}"
-                        alt=""
-                        class="hero__logo"
-                        aria-hidden="true"
-                    />
+                    <!-- BHC mark -->
+                    <span class="hero__logo">{% include "partials/bhc-mark.html" %}</span>
                     <h1 class="hero__title hero__title--gradient">
                         {{ config.extra.product.tagline }}
                     </h1>

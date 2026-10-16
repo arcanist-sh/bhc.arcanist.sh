@@ -32,20 +32,18 @@
 .header__brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: var(--weight-semibold);
-  letter-spacing: -0.01em;
+  color: var(--color-brand-mark);
   text-decoration: none;
-  background: linear-gradient(135deg, #cba6f7 0%, #89b4fa 50%, #5e5086 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
   transition: opacity 0.15s ease;
 
   &:hover {
     opacity: 0.8;
+  }
+
+  .bhc-lockup {
+    display: block;
+    height: 22px;
+    width: auto;
   }
 }
 

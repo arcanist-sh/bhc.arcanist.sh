@@ -204,21 +204,26 @@ $content-padding: 2rem;
   position: relative;
 }
 
-// Haskell logo in hero
+// BHC mark in hero
 .hero__logo {
   position: absolute;
-  top: 2rem;
-  right: 2rem;
-  width: 120px;
-  height: auto;
-  opacity: 0.2;
+  top: 2.5rem;
+  right: 3rem;
+  width: 132px;
+  color: var(--color-brand-mark);
   pointer-events: none;
-  // Light color for visibility on dark background
-  filter: brightness(0) invert(1);
 
   svg {
+    display: block;
     width: 100%;
     height: auto;
+  }
+
+  @media (max-width: 768px) {
+    position: static;
+    display: block;
+    width: 72px;
+    margin-bottom: 1.5rem;
   }
 }
 
@@ -1986,11 +1991,6 @@ pre:hover > .code-copy-btn {
 // Light Theme Adjustments
 // -----------------------------------------------------------------------------
 [data-theme="light"] {
-  .hero__logo {
-    opacity: 0.15;
-    filter: brightness(0); // Dark on light background
-  }
-
   .hero__title {
     color: var(--color-heading);
   }

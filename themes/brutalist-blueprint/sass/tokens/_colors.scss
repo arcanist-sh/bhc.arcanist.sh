@@ -94,6 +94,9 @@ $ctp-latte: (
 // High contrast, grid lines prominent
 // -----------------------------------------------------------------------------
 :root {
+  // BHC mark: trying the site's own accent (mauve) instead of off-white / Klein blue
+  --color-brand-mark: var(--color-accent);
+
   // Text colors
   --color-text: var(--ctp-text);
   --color-text-secondary: var(--ctp-subtext1);

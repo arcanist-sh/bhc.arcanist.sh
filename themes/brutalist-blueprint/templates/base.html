@@ -112,6 +112,10 @@
     {% if config.extra.favicon is defined %}
     <link rel="icon" href="{{ get_url(path=config.extra.favicon) | safe }}" sizes="48x48">
     {% endif %}
+    {% if config.extra.favicon_svg is defined %}
+    <link rel="icon" type="image/svg+xml" href="{{ get_url(path=config.extra.favicon_svg) | safe }}">
+    {% endif %}
+    <meta name="theme-color" content="{{ config.extra.theme_color | default(value='#1d3fd8') }}">
     {% if config.extra.favicon_png is defined %}
     <link rel="icon" type="image/png" sizes="32x32" href="{{ get_url(path=config.extra.favicon_png) | safe }}">
     {% endif %}
