@@ -4,8 +4,8 @@
   "description": "An alternative compiler for Haskell: compatibility-first, with a modern runtime, multiple targets, and opt-in extensions.",
   "start_url": "./",
   "display": "standalone",
-  "theme_color": "#1d3fd8",
-  "background_color": "#1d3fd8",
+  "theme_color": "#8839ef",
+  "background_color": "#8839ef",
   "icons": [
     {
       "src": "icon-192.png",
