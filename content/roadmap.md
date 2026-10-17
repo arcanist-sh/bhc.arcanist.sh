@@ -10,7 +10,7 @@ BHC is under active development. This roadmap outlines our priorities and milest
 
 ## Current Status
 
-**M0–M10 Complete.** The compiler has working native code generation, runtime profiles, Tensor IR with fusion guarantees, SIMD vectorization, GPU backends, WebAssembly support, dependent types preview, and Cargo-quality diagnostics.
+**Beta.** Native code generation and language completeness are complete, and BHC compiles all 221 modules of Pandoc to a running binary. The WebAssembly backend runs in wasmtime at near-parity with native. The numeric profile's Tensor IR and SIMD lowering are built, but guaranteed fusion is not yet met on native code; the server runtime is complete but not wired to compiled code; the GPU backends are mock-validated except Metal, which runs on Apple silicon. There is no live garbage collector yet. The [status page](/status/) has the measured details.
 
 ## Completed Milestones
 

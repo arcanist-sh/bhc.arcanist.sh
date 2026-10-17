@@ -22,9 +22,9 @@ BHC (Basel Haskell Compiler) is a new Haskell compiler focused on:
 |--------|-----|-----|
 | Backend | LLVM native | NCG / LLVM |
 | Evaluation | Profile-based (strict/lazy) | Lazy by default |
-| Target focus | Native, WASM, embedded | General-purpose |
-| Maturity | Alpha (v0.1.0) | Production-ready |
-| Compatibility | Haskell 2010 subset | Full Haskell + extensions |
+| Target focus | Native, WASM, GPU | General-purpose |
+| Maturity | Beta (v0.2.22) | Production-ready |
+| Compatibility | Haskell 2010 plus common GHC extensions (compiles all of Pandoc) | Full Haskell + extensions |
 
 BHC is **not** a GHC replacement. It's an alternative compiler for specific use cases where native performance and predictability matter.
 

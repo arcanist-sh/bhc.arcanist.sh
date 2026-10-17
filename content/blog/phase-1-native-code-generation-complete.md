@@ -1,7 +1,7 @@
 +++
 title = "Phase 1: Native Code Generation is Complete"
 description = "BHC can now parse Haskell, type check, lower to Core IR, generate LLVM IR, link with the RTS, and produce working native executables. Here's what we've achieved."
-date = 2025-01-25
+date = 2026-01-25
 template = "blog-post.html"
 
 [extra]

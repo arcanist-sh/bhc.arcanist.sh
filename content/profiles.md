@@ -95,50 +95,14 @@ Best for:
 - Serverless functions
 - Size-constrained deployments
 
-### realtime
+## Planned Profiles
 
-Bounded GC pauses and predictable latency for time-sensitive applications.
+Two more profiles are designed but not yet selectable:
 
-```bash
-bhc --profile=realtime Main.hs
-```
+- **realtime**: bounded pauses and per-frame arena allocation for games, audio and control loops. The incremental collector and pause measurement exist as runtime modules; the profile is not wired into the compiler yet.
+- **embedded**: no garbage collector and static allocation for microcontrollers and bare-metal targets. A no-GC mode and static allocator exist; bare-metal code generation is deferred.
 
-Features:
-- Bounded GC pauses (configurable, default <1ms)
-- Arena allocators for per-frame allocation
-- Incremental GC with latency guarantees
-- Predictable scheduling behavior
-- No GC during critical sections
-
-Best for:
-- Game engines and game logic
-- Audio processing and synthesis
-- Robotics and control systems
-- VR/AR applications
-- Any soft real-time system
-
-### embedded
-
-No garbage collector, static allocation only, bare-metal execution.
-
-```bash
-bhc --profile=embedded --target=thumbv7m-none-eabi Main.hs
-```
-
-Features:
-- No GC (compile-time error if GC would be needed)
-- Static memory allocation only
-- Stack-based computation
-- Direct hardware access primitives
-- Minimal or zero runtime
-- Interrupt-safe code generation
-
-Best for:
-- Microcontrollers (ARM Cortex-M, RISC-V)
-- Safety-critical systems
-- Bootloaders and firmware
-- Bare-metal applications
-- Memory-constrained devices (<64KB RAM)
+They will be documented here, with their contracts, when they can be selected.
 
 ## Selecting Profiles
 

@@ -71,7 +71,7 @@ There's a quieter reason too. A flag is something you set and forget; a profile 
 
 Haskell doesn't require a specific runtime — that's an implementation detail. GHC's runtime is good, but it's one runtime trying to serve everyone.
 
-We wanted different runtimes for different jobs. The server profile needs a work-stealing scheduler and cancellation. The numeric profile needs arena allocators and pinned memory. The realtime profile needs bounded GC pauses. The embedded profile needs no GC at all.
+We wanted different runtimes for different jobs. The server profile needs a work-stealing scheduler and cancellation. The numeric profile needs arena allocators and pinned memory. The planned realtime profile will need bounded pauses, and the planned embedded profile no GC at all.
 
 You can't really do that with one runtime and some flags. So we wrote multiple.
 

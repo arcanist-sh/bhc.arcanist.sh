@@ -75,7 +75,7 @@ badge_url = "https://github.com/arcanist-sh/bhc"
 features_title = "Capabilities"
 features_subtitle = "BHC extends standard Haskell with runtime profiles, a tensor-native numeric pipeline, and compilation targets beyond native binaries. Same language, more options."
 footer_tagline = "Functional. Portable. Fast. Haskell that ships."
-footer_note = "© 2025 arcanist.sh. Released under the BSD-3-Clause License."
+footer_note = "© 2026 arcanist.sh. Released under the BSD-3-Clause License."
 
 # Install methods for dropdown
 [[extra.product.install_methods]]
@@ -258,7 +258,7 @@ usage = "bhc --profile=numeric Compute.hs"
 [[extra.product.profiles]]
 id = "edge"
 name = "Edge"
-description = "Minimal runtime footprint for WASM and embedded targets. Reduced GC, smaller binaries."
+description = "Minimal runtime footprint for WebAssembly and other constrained targets. Smaller binaries, fewer runtime services."
 example_file = "Lambda.hs"
 example_code = """module Lambda where
 
@@ -298,106 +298,6 @@ encodeInt :: Int -> String
 encodeInt = show"""
 usage = "bhc --profile=edge --target=wasm32-wasi Lambda.hs"
 
-[[extra.product.profiles]]
-id = "realtime"
-name = "Realtime"
-description = "Bounded GC pauses, predictable latency, arena allocation. For games, audio, and robotics."
-example_file = "AudioEngine.hs"
-example_code = """{-# LANGUAGE BHC.Realtime #-}
-module AudioEngine where
-
--- | Audio processing with hard latency requirements.
--- The realtime profile guarantees bounded GC pauses (<1ms)
--- and provides arena allocators for per-frame allocation.
-
-import BHC.Realtime.Arena (Arena, withArena, alloc)
-import BHC.Realtime.Audio (Sample, SampleRate, Buffer)
-import Data.Vector.Storable (Vector)
-import qualified Data.Vector.Storable as V
-
--- | Audio callback invoked by the system at regular intervals.
--- Must complete within the buffer period (e.g., 5ms for 48kHz/256 samples).
--- Arena allocation ensures no GC occurs during processing.
-processAudio :: Arena -> Buffer Sample -> Buffer Sample -> IO ()
-processAudio arena input output = withArena arena $ do
-    -- All allocations in this block use the arena.
-    -- Memory is freed in bulk when the arena resets (per frame).
-    let filtered = applyLowPass 0.3 input
-    let amplified = V.map (* 0.8) filtered
-
-    -- Copy result to output buffer (pre-allocated by host).
-    V.copy output amplified
-
--- | Low-pass filter with no heap allocation.
--- Intermediate vectors allocated in arena, not GC heap.
-applyLowPass :: Double -> Buffer Sample -> Buffer Sample
-applyLowPass cutoff buf = V.zipWith blend buf smoothed
-  where
-    smoothed = V.scanl' (\\acc x -> acc + realToFrac cutoff * (x - acc)) 0 buf
-    blend orig filt = 0.7 * orig + 0.3 * filt
-
--- | Game loop tick with deterministic timing.
--- Realtime profile: GC only runs between frames, never during.
-gameTick :: Arena -> GameState -> GameState
-gameTick arena state = withArena arena $
-    updatePhysics . processInput . updateEntities $ state"""
-usage = "bhc --profile=realtime AudioEngine.hs"
-
-[[extra.product.profiles]]
-id = "embedded"
-name = "Embedded"
-description = "No GC, static allocation, bare-metal targets. For microcontrollers and safety-critical systems."
-example_file = "Firmware.hs"
-example_code = """{-# LANGUAGE BHC.Embedded #-}
-{-# LANGUAGE BHC.NoGC #-}
-module Firmware where
-
--- | Bare-metal firmware for a microcontroller.
--- The embedded profile eliminates the garbage collector entirely.
--- All memory must be statically allocated or stack-based.
-
-import BHC.Embedded.GPIO (Pin, pinMode, digitalWrite, INPUT, OUTPUT)
-import BHC.Embedded.Static (StaticArray, staticArray, readAt, writeAt)
-import Data.Word (Word8, Word16)
-
--- | Statically allocated sensor buffer (no heap).
--- Size known at compile time, lives in .data section.
-{-# NOINLINE sensorBuffer #-}
-sensorBuffer :: StaticArray 64 Word16
-sensorBuffer = staticArray 0
-
--- | Main firmware entry point. Runs forever, no allocation.
--- All computation uses registers and stack only.
-foreign export ccall main :: IO ()
-main :: IO ()
-main = do
-    -- Initialize GPIO pins
-    pinMode led OUTPUT
-    pinMode button INPUT
-
-    -- Event loop: poll, process, actuate
-    forever $ do
-        reading <- readSensor
-        writeAt sensorBuffer 0 reading
-        when (reading > threshold) $
-            digitalWrite led True
-
--- | Read ADC value. Pure register access, no allocation.
-readSensor :: IO Word16
-readSensor = peek sensorRegister
-
--- | Hardware addresses (memory-mapped IO).
-led, button :: Pin
-led    = Pin 13
-button = Pin 2
-
-threshold :: Word16
-threshold = 512
-
-sensorRegister :: Ptr Word16
-sensorRegister = wordPtrToPtr 0x40001234"""
-usage = "bhc --profile=embedded --target=thumbv7m-none-eabi Firmware.hs"
-
 # FAQ
 [[extra.product.faq]]
 question = "Is BHC a fork of GHC?"
@@ -405,7 +305,7 @@ answer = "No. BHC is a clean-slate compiler written in Rust. It targets the Hask
 
 [[extra.product.faq]]
 question = "Why might I choose BHC over GHC?"
-answer = "BHC makes different tradeoffs. <strong>Choose BHC if:</strong> you need WebAssembly, GPU compute, or embedded targets as first-class citizens; you want guaranteed fusion contracts rather than best-effort optimization; you need structured concurrency with cancellation and deadlines; you're targeting realtime systems with bounded GC pauses; or you want a smaller, more hackable compiler to contribute to. <strong>Choose GHC if:</strong> you need maximum Hackage compatibility today; you rely heavily on Template Haskell; you need battle-tested production stability; or your codebase uses GHC-specific extensions BHC doesn't yet support. They compile the same language. BHC is younger but opinionated about modern deployment targets and numeric workloads. GHC has decades of ecosystem and stability. Many projects may eventually use both."
+answer = "BHC makes different tradeoffs. <strong>Choose BHC if:</strong> you want a compiler designed around WebAssembly and GPU targets, explicit runtime profiles, fusion contracts and structured concurrency, and you are comfortable with a young toolchain whose code generator is still catching up with that design; or you want a smaller, more hackable compiler to contribute to. <strong>Choose GHC if:</strong> you need maximum Hackage compatibility today; you rely heavily on Template Haskell; you need battle-tested production stability; or your codebase uses GHC-specific extensions BHC doesn't yet support. They compile the same language. BHC is younger but opinionated about modern deployment targets and numeric workloads. GHC has decades of ecosystem and stability. Many projects may eventually use both."
 
 [[extra.product.faq]]
 question = "Can I use my existing Haskell packages?"
@@ -413,7 +313,7 @@ answer = "BHC is actively working on real-world Haskell compatibility (M11). It 
 
 [[extra.product.faq]]
 question = "What are runtime profiles?"
-answer = "Profiles are compile-time configurations with different performance contracts. <strong>Default</strong>: lazy evaluation, GC-managed. <strong>Server</strong>: structured concurrency, observability. <strong>Numeric</strong>: strict-by-default, guaranteed fusion. <strong>Edge</strong>: minimal runtime for WASM. <strong>Realtime</strong>: bounded GC pauses for games/audio. <strong>Embedded</strong>: no GC, bare-metal targets."
+answer = "Profiles are compile-time configurations with different performance contracts. <strong>Default</strong>: lazy evaluation, GC-managed. <strong>Server</strong>: structured concurrency, observability. <strong>Numeric</strong>: strict-by-default, guaranteed fusion. <strong>Edge</strong>: minimal runtime for WASM. Realtime and embedded profiles are planned, not yet selectable."
 
 [[extra.product.faq]]
 question = "What makes the Numeric profile special?"
@@ -421,7 +321,7 @@ answer = "The Numeric profile guarantees fusion for standard patterns like <code
 
 [[extra.product.faq]]
 question = "Does BHC support GPUs?"
-answer = "Yes. The GPU backend generates CUDA and ROCm code for tensor operations. Write standard Haskell with tensor syntax; the compiler handles GPU code generation and memory transfers automatically."
+answer = "Partly. The Metal backend runs tensor kernels on Apple-silicon GPUs today. CUDA (PTX) and ROCm (AMDGCN) code generation exists and passes mock validation, but has not yet been tested on NVIDIA or AMD hardware. The goal is that you write standard Haskell with tensor syntax and the compiler handles GPU code generation and memory transfers."
 
 [[extra.product.faq]]
 question = "What about WebAssembly?"
@@ -429,7 +329,7 @@ answer = "BHC can target WASM for browser and edge deployment. Use <code>--targe
 
 [[extra.product.faq]]
 question = "Is BHC production-ready?"
-answer = "BHC has completed milestones M0–M10 (core compiler, profiles, GPU, WASM, diagnostics). M11 focusing on real-world Haskell compatibility is in progress. Suitable for new projects; existing codebases increasingly supported."
+answer = "BHC is in beta. Native code generation and language completeness are done, the WebAssembly backend runs in wasmtime, and BHC compiles all 221 modules of Pandoc to a binary whose Markdown reader and HTML writer run end to end. Numeric fusion and server concurrency exist but are not yet wired into native output, and there is no live garbage collector yet, so long-running programs are not a fit today. See the status page for measured details."
 
 [[extra.product.faq]]
 question = "How do I report bugs or contribute?"
@@ -437,7 +337,7 @@ answer = "Open an issue or discussion on <a href=\"https://github.com/arcanist-s
 
 [[extra.product.faq]]
 question = "Does BHC work with Cabal and Stack?"
-answer = "Yes. BHC reads <code>.cabal</code> files directly and resolves dependencies from Hackage. Use <code>bhc build</code> as a drop-in for <code>cabal build</code>. Stack support is planned. Existing project files work without modification."
+answer = "Yes, through hx. hx reads your existing <code>.cabal</code> files, resolves dependencies from Hackage, and builds with BHC when you pass <code>--backend bhc</code> or set it in <code>hx.toml</code>. Existing project files work without modification; how much of a given package compiles depends on the compatibility status of what it uses."
 
 [[extra.product.faq]]
 question = "How do I migrate a project from GHC?"
@@ -457,7 +357,7 @@ answer = "Yes. BHC uses LLVM for native code generation, just like GHC (optional
 
 [[extra.product.faq]]
 question = "What does BHC enable for Haskell?"
-answer = "BHC makes Haskell viable for domains where it previously struggled to compete. <strong>Machine learning</strong> with tensor-native compilation and GPU acceleration. <strong>Bioinformatics</strong> — protein folding, genomics, sequence analysis — with predictable numeric performance. <strong>Security policy engines</strong> where declarative 'what, not how' expressiveness ensures correctness. In a world where AI generates implementation code, languages that cleanly express intent, constraints, and invariants become primary. Haskell's type safety and declarative style are assets, not luxuries. BHC adds the runtime to match: WebAssembly for edge enforcement, GPUs for compute, realtime for robotics. Specify <em>what</em> you want; let the compiler and runtime handle <em>how</em>."
+answer = "BHC makes Haskell viable for domains where it previously struggled to compete. <strong>Machine learning</strong> with tensor-native compilation and GPU acceleration. <strong>Bioinformatics</strong> — protein folding, genomics, sequence analysis — with predictable numeric performance. <strong>Security policy engines</strong> where declarative 'what, not how' expressiveness ensures correctness. In a world where AI generates implementation code, languages that cleanly express intent, constraints, and invariants become primary. Haskell's type safety and declarative style are assets, not luxuries. BHC aims to add the runtime to match: WebAssembly for edge enforcement and GPUs for compute. Specify <em>what</em> you want; let the compiler and runtime handle <em>how</em>."
 
 [[extra.product.faq]]
 question = "How are BHC's error messages?"
@@ -465,7 +365,7 @@ answer = "BHC prioritizes clear diagnostics. Error messages include source spans
 
 [[extra.product.faq]]
 question = "Can BHC cross-compile?"
-answer = "Yes. BHC supports multiple targets from a single installation: native (x86_64, aarch64), WebAssembly (wasm32-wasi), and embedded (ARM Cortex-M, RISC-V). Use <code>--target</code> to specify. No separate toolchain installation required for WASM."
+answer = "Yes. BHC supports native (x86_64, aarch64) and WebAssembly (wasm32-wasi) from a single installation; use <code>--target</code> to choose. No separate toolchain installation is required for WASM. Bare-metal embedded targets are planned."
 
 # Social links
 [extra.social]
